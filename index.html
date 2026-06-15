@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FarmAlert Enterprise Admin Portal</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script>
+      window.addEventListener('error', function(event) {
+        var errorDiv = document.getElementById('debug-error');
+        if (!errorDiv) {
+          errorDiv = document.createElement('div');
+          errorDiv.id = 'debug-error';
+          errorDiv.style.position = 'fixed';
+          errorDiv.style.top = '0';
+          errorDiv.style.left = '0';
+          errorDiv.style.width = '100%';
+          errorDiv.style.height = '100%';
+          errorDiv.style.backgroundColor = '#0f172a';
+          errorDiv.style.color = '#ef4444';
+          errorDiv.style.fontFamily = 'monospace';
+          errorDiv.style.padding = '20px';
+          errorDiv.style.zIndex = '999999';
+          errorDiv.style.overflow = 'auto';
+          errorDiv.innerHTML = '<h1 style="font-size: 1.5rem; margin-bottom: 10px; color: #f87171;">Global JavaScript Error Detected</h1><p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 20px;">The app crashed before React could load. Diagnostics:</p>';
+          document.body.appendChild(errorDiv);
+        }
+        var msg = document.createElement('pre');
+        msg.style.margin = '10px 0';
+        msg.style.whiteSpace = 'pre-wrap';
+        msg.style.fontSize = '12px';
+        msg.style.color = '#f87171';
+        msg.innerText = (event.message || 'Resource Load Error') + '\n  at ' + (event.filename || 'unknown file') + ':' + (event.lineno || 0) + ':' + (event.colno || 0);
+        errorDiv.appendChild(msg);
+      }, true);
+    </script>
   </head>
   <body>
     <div id="root"></div>
