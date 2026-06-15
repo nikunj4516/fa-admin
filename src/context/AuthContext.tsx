@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "../integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
@@ -8,6 +8,7 @@ interface AuthContextType {
   role: "user" | "admin" | "super_admin" | null;
   loading: boolean;
   logout: () => Promise<void>;
+  isConfigured: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +20,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState<boolean>(true);
 
   const checkUserRole = async (userId: string) => {
+    if (!isSupabaseConfigured) return;
     if (userId === "test-user-id") {
       setRole("super_admin");
       return;
@@ -44,6 +46,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setLoading(false);
+      return;
+    }
+
     // 1. Get initial session
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       setSession(initialSession);
@@ -80,6 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const logout = async () => {
+    if (!isSupabaseConfigured) return;
     setLoading(true);
     await supabase.auth.signOut();
     setUser(null);
@@ -89,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, role, loading, logout }}>
+    <AuthContext.Provider value={{ user, session, role, loading, logout, isConfigured: isSupabaseConfigured }}>
       {children}
     </AuthContext.Provider>
   );

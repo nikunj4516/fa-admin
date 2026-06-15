@@ -22,8 +22,10 @@ import { Analytics } from "./pages/Analytics";
 import { SettingsModule } from "./pages/Settings";
 import { SystemLogs } from "./pages/SystemLogs";
 
+import { AlertTriangle } from "lucide-react";
+
 const PortalContent = () => {
-  const { user, role, loading: authLoading } = useAuth();
+  const { user, role, loading: authLoading, isConfigured } = useAuth();
   
   // Tab Navigation & Details View
   const [activeTab, setActiveTab] = useState<SidebarTab>("dashboard");
@@ -309,6 +311,45 @@ const PortalContent = () => {
   const handleClearAll = () => {
     setNotifications([]);
   };
+
+  if (!isConfigured) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6">
+        <div className="max-w-xl w-full bg-slate-950 border border-slate-800 rounded-2xl p-8 shadow-2xl space-y-6">
+          <div className="flex flex-col items-center text-center">
+            <div className="h-12 w-12 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <h1 className="text-xl font-bold text-white tracking-tight">Supabase Connection Required</h1>
+            <p className="text-slate-400 text-sm mt-2 leading-relaxed">
+              The application could not establish a connection to your Supabase project because the environment variables are not configured on Netlify.
+            </p>
+          </div>
+
+          <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-4 text-xs">
+            <span className="font-bold text-slate-300 block uppercase tracking-wider text-[9px]">How to resolve:</span>
+            <p className="text-slate-400 leading-normal">
+              Please go to your **Netlify Dashboard**, navigate to **Site configuration** &gt; **Environment variables**, and add the following keys with your Supabase credentials:
+            </p>
+            <div className="space-y-2 font-mono">
+              <div className="bg-slate-950 p-2.5 rounded border border-slate-800 flex justify-between items-center">
+                <span className="text-amber-500 font-bold">VITE_SUPABASE_URL</span>
+                <span className="text-slate-500 text-[10px]">https://jipmjrgsqhjknbtkjhel.supabase.co</span>
+              </div>
+              <div className="bg-slate-950 p-2.5 rounded border border-slate-800 flex justify-between items-center">
+                <span className="text-amber-500 font-bold">VITE_SUPABASE_PUBLISHABLE_KEY</span>
+                <span className="text-slate-400 text-[10px] truncate max-w-[200px]">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpX...</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-center text-[10px] text-slate-500 font-medium">
+            After adding these environment variables, trigger a new deploy on your Netlify Dashboard.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (authLoading) {
     return (
